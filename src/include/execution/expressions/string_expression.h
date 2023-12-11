@@ -26,6 +26,7 @@
 #include "storage/table/tuple.h"
 #include "type/type.h"
 #include "type/type_id.h"
+#include "type/value.h"
 #include "type/value_factory.h"
 
 namespace bustub {
@@ -46,7 +47,19 @@ class StringExpression : public AbstractExpression {
 
   auto Compute(const std::string &val) const -> std::string {
     // TODO(student): implement upper / lower.
-    return {};
+    std::string str = val;
+    if (expr_type_ == StringExpressionType::Lower) {
+      for (char &ch : str) {
+        ch = std::tolower(ch);
+      }
+    }
+
+    if (expr_type_ == StringExpressionType::Upper) {
+      for (char &ch : str) {
+        ch = std::toupper(ch);
+      }
+    }
+    return {str};
   }
 
   auto Evaluate(const Tuple *tuple, const Schema &schema) const -> Value override {
