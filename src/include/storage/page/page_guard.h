@@ -52,7 +52,7 @@ class BasicPageGuard {
    */
   auto operator=(BasicPageGuard &&that) noexcept -> BasicPageGuard &;
 
-  /** TODO(P1): Add implementation
+  /** TODO(P2): Add implementation
    *
    * @brief Destructor for BasicPageGuard
    *
