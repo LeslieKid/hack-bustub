@@ -16,18 +16,20 @@
 
 namespace bustub {
 
-void ExtendibleHTableHeaderPage::Init(uint32_t max_depth) {
-  throw NotImplementedException("ExtendibleHTableHeaderPage is not implemented");
+void ExtendibleHTableHeaderPage::Init(uint32_t max_depth) { max_depth_ = max_depth; }
+
+auto ExtendibleHTableHeaderPage::HashToDirectoryIndex(uint32_t hash) const -> uint32_t {
+  return hash >> (32 - max_depth_);
 }
 
-auto ExtendibleHTableHeaderPage::HashToDirectoryIndex(uint32_t hash) const -> uint32_t { return 0; }
-
-auto ExtendibleHTableHeaderPage::GetDirectoryPageId(uint32_t directory_idx) const -> uint32_t { return 0; }
+auto ExtendibleHTableHeaderPage::GetDirectoryPageId(uint32_t directory_idx) const -> uint32_t {
+  return directory_page_ids_[directory_idx];
+}
 
 void ExtendibleHTableHeaderPage::SetDirectoryPageId(uint32_t directory_idx, page_id_t directory_page_id) {
-  throw NotImplementedException("ExtendibleHTableHeaderPage is not implemented");
+  directory_page_ids_[directory_idx] = directory_page_id;
 }
 
-auto ExtendibleHTableHeaderPage::MaxSize() const -> uint32_t { return 0; }
+auto ExtendibleHTableHeaderPage::MaxSize() const -> uint32_t { return (1 << max_depth_); }
 
 }  // namespace bustub

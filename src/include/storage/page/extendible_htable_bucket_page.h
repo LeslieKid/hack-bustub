@@ -134,7 +134,7 @@ class ExtendibleHTableBucketPage {
  private:
   uint32_t size_;
   uint32_t max_size_;
-  MappingType array_[HTableBucketArraySize(sizeof(MappingType))];
+  MappingType array_[HTableBucketArraySize(sizeof(MappingType))];  // 这里用array也太夸张了吧……
 };
 
 }  // namespace bustub
