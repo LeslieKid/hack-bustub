@@ -36,6 +36,7 @@ auto BasicPageGuard::operator=(BasicPageGuard &&that) noexcept -> BasicPageGuard
 BasicPageGuard::~BasicPageGuard() { this->Drop(); };  // NOLINT
 
 auto BasicPageGuard::UpgradeRead() -> ReadPageGuard {
+  this->page_->RLatch();
   ReadPageGuard read_guard(this->bpm_, this->page_);
   this->bpm_ = nullptr;
   this->page_ = nullptr;
@@ -44,6 +45,7 @@ auto BasicPageGuard::UpgradeRead() -> ReadPageGuard {
 }
 
 auto BasicPageGuard::UpgradeWrite() -> WritePageGuard {
+  this->page_->WLatch();
   WritePageGuard write_guard(this->bpm_, this->page_);
   this->bpm_ = nullptr;
   this->page_ = nullptr;

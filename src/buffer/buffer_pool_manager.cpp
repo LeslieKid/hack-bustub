@@ -207,17 +207,20 @@ auto BufferPoolManager::FetchPageBasic(page_id_t page_id) -> BasicPageGuard {
 auto BufferPoolManager::FetchPageRead(page_id_t page_id) -> ReadPageGuard {
   auto pg_ptr = FetchPage(page_id);
   pg_ptr->RLatch();
+  assert(pg_ptr != nullptr);
   return {this, pg_ptr};
 }
 
 auto BufferPoolManager::FetchPageWrite(page_id_t page_id) -> WritePageGuard {
   auto pg_ptr = FetchPage(page_id);
   pg_ptr->WLatch();
+  assert(pg_ptr != nullptr);
   return {this, pg_ptr};
 }
 
 auto BufferPoolManager::NewPageGuarded(page_id_t *page_id) -> BasicPageGuard {
   auto pg_ptr = NewPage(page_id);
+  assert(pg_ptr != nullptr);
   return {this, pg_ptr};
 }
 

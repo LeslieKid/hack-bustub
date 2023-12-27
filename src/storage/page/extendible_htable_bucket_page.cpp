@@ -21,6 +21,7 @@ namespace bustub {
 template <typename K, typename V, typename KC>
 void ExtendibleHTableBucketPage<K, V, KC>::Init(uint32_t max_size) {
   max_size_ = max_size;
+  size_ = 0;
 }
 
 template <typename K, typename V, typename KC>
@@ -71,6 +72,10 @@ auto ExtendibleHTableBucketPage<K, V, KC>::Remove(const K &key, const KC &cmp) -
 
 template <typename K, typename V, typename KC>
 void ExtendibleHTableBucketPage<K, V, KC>::RemoveAt(uint32_t bucket_idx) {
+  // 这个if语句的疏忽又是一个隐藏bug……
+  if (bucket_idx >= size_) {
+    return;
+  }
   for (uint32_t i = bucket_idx + 1; i < size_; ++i) {
     array_[i - 1].first = array_[i].first;
     array_[i - 1].second = array_[i].second;
