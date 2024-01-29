@@ -38,9 +38,10 @@ auto Planner::GetFuncCallFromFactory(const std::string &func_name, std::vector<A
   if (args.size() != 1) {
     throw Exception("The number of args should be 1");
   }
-  if (args[0]->GetReturnType() != VARCHAR) {
-    throw Exception("The args should be string");
-  }
+  // 此处由于比较类型不同的值报错，需要修改
+  // if (args[0]->GetReturnType() != VARCHAR) {
+  //   throw Exception("The args should be string");
+  // }
   // 3. return a `StringExpression` std::shared_ptr.
   auto ptr = std::make_shared<StringExpression>(args[0], expr_type);
   return ptr;

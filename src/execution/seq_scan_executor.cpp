@@ -11,13 +11,37 @@
 //===----------------------------------------------------------------------===//
 
 #include "execution/executors/seq_scan_executor.h"
+#include <memory>
+#include "catalog/catalog.h"
+#include "storage/table/table_iterator.h"
+#include "storage/table/tuple.h"
 
 namespace bustub {
 
-SeqScanExecutor::SeqScanExecutor(ExecutorContext *exec_ctx, const SeqScanPlanNode *plan) : AbstractExecutor(exec_ctx) {}
+SeqScanExecutor::SeqScanExecutor(ExecutorContext *exec_ctx, const SeqScanPlanNode *plan)
+    : AbstractExecutor(exec_ctx), plan_(plan) {}
 
-void SeqScanExecutor::Init() { throw NotImplementedException("SeqScanExecutor is not implemented"); }
+void SeqScanExecutor::Init() {
+  table_oid_t table_id = plan_->GetTableOid();
+  Catalog *catalog = exec_ctx_->GetCatalog();
+  TableInfo *table_info = catalog->GetTable(table_id);
+  auto &table_heap = table_info->table_;
+  table_iter_ = std::make_unique<TableIterator>(table_heap->MakeIterator());
+}
 
-auto SeqScanExecutor::Next(Tuple *tuple, RID *rid) -> bool { return false; }
+auto SeqScanExecutor::Next(Tuple *tuple, RID *rid) -> bool {
+  while (true) {
+    if (table_iter_->IsEnd()) {
+      return false;
+    }
+    *rid = table_iter_->GetRID();
+    *tuple = table_iter_->GetTuple().second;
+    TupleMeta tuple_meta = table_iter_->GetTuple().first;
+    ++*table_iter_;  // 这里只能用前缀++，与运算符重载的实现相关
+    if (!tuple_meta.is_deleted_) {
+      return true;
+    }
+  }
+}
 
 }  // namespace bustub
