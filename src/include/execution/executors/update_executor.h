@@ -70,5 +70,7 @@ class UpdateExecutor : public AbstractExecutor {
   std::unique_ptr<AbstractExecutor> child_executor_;
 
   std::vector<IndexInfo *> index_array_;
+
+  bool is_end_;
 };
 }  // namespace bustub
