@@ -14,10 +14,13 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
+#include "catalog/catalog.h"
 #include "execution/executor_context.h"
 #include "execution/executors/abstract_executor.h"
 #include "execution/plans/insert_plan.h"
+#include "storage/table/table_heap.h"
 #include "storage/table/tuple.h"
 
 namespace bustub {
@@ -55,8 +58,21 @@ class InsertExecutor : public AbstractExecutor {
   auto GetOutputSchema() const -> const Schema & override { return plan_->OutputSchema(); };
 
  private:
-  /** The insert plan node to be executed*/
+  /** The insert plan node to be executed */
   const InsertPlanNode *plan_;
+
+  /** The executor to the (only) child of InsertPlanNode */
+  std::unique_ptr<AbstractExecutor> child_executor_;
+
+  /** The amount of rows have been inserted */
+  int32_t row_amount_;
+  Value row_value_;
+
+  /** The Array of the table indexes */
+  std::vector<IndexInfo *> index_array_;
+
+  TableInfo *table_info_;
+  bool is_end_;
 };
 
 }  // namespace bustub

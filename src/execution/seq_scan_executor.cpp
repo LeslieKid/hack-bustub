@@ -12,6 +12,7 @@
 
 #include "execution/executors/seq_scan_executor.h"
 #include <memory>
+#include <vector>
 #include "catalog/catalog.h"
 #include "storage/table/table_iterator.h"
 #include "storage/table/tuple.h"
@@ -35,11 +36,21 @@ auto SeqScanExecutor::Next(Tuple *tuple, RID *rid) -> bool {
       return false;
     }
     *rid = table_iter_->GetRID();
-    *tuple = table_iter_->GetTuple().second;
+    *tuple = Tuple(table_iter_->GetTuple().second);
     TupleMeta tuple_meta = table_iter_->GetTuple().first;
     ++*table_iter_;  // 这里只能用前缀++，与运算符重载的实现相关
+    
     if (!tuple_meta.is_deleted_) {
-      return true;
+      // Make usage of the filter.
+      if(plan_->filter_predicate_) {
+        auto& filter_expr = plan_->filter_predicate_;
+        Value value = filter_expr->Evaluate(tuple, GetOutputSchema());
+        if(!value.IsNull() && value.GetAs<bool>()) {
+          return true;
+        }
+      } else {
+        return true;
+      }
     }
   }
 }
