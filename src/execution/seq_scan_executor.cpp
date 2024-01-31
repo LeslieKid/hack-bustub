@@ -39,13 +39,13 @@ auto SeqScanExecutor::Next(Tuple *tuple, RID *rid) -> bool {
     *tuple = Tuple(table_iter_->GetTuple().second);
     TupleMeta tuple_meta = table_iter_->GetTuple().first;
     ++*table_iter_;  // 这里只能用前缀++，与运算符重载的实现相关
-    
+
     if (!tuple_meta.is_deleted_) {
       // Make usage of the filter.
-      if(plan_->filter_predicate_) {
-        auto& filter_expr = plan_->filter_predicate_;
+      if (plan_->filter_predicate_) {
+        auto &filter_expr = plan_->filter_predicate_;
         Value value = filter_expr->Evaluate(tuple, GetOutputSchema());
-        if(!value.IsNull() && value.GetAs<bool>()) {
+        if (!value.IsNull() && value.GetAs<bool>()) {
           return true;
         }
       } else {

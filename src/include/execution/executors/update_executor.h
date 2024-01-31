@@ -16,9 +16,11 @@
 #include <utility>
 #include <vector>
 
+#include "catalog/catalog.h"
 #include "execution/executor_context.h"
 #include "execution/executors/abstract_executor.h"
 #include "execution/plans/update_plan.h"
+#include "storage/table/table_heap.h"
 #include "storage/table/tuple.h"
 #include "type/value_factory.h"
 
@@ -66,5 +68,7 @@ class UpdateExecutor : public AbstractExecutor {
 
   /** The child executor to obtain value from */
   std::unique_ptr<AbstractExecutor> child_executor_;
+
+  std::vector<IndexInfo *> index_array_;
 };
 }  // namespace bustub
