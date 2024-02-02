@@ -285,7 +285,7 @@ class Catalog {
    * @param table_name The name of the table on which to perform query
    * @return A (non-owning) pointer to the metadata for the index
    */
-  auto GetIndex(const std::string &index_name, const std::string &table_name) -> IndexInfo * {
+  auto GetIndex(const std::string &index_name, const std::string &table_name) const -> IndexInfo * {
     auto table = index_names_.find(table_name);
     if (table == index_names_.end()) {
       BUSTUB_ASSERT((table_names_.find(table_name) == table_names_.end()), "Broken Invariant");
@@ -311,7 +311,7 @@ class Catalog {
    * @param table_oid The OID of the table on which to perform query
    * @return A (non-owning) pointer to the metadata for the index
    */
-  auto GetIndex(const std::string &index_name, const table_oid_t table_oid) -> IndexInfo * {
+  auto GetIndex(const std::string &index_name, const table_oid_t table_oid) const -> IndexInfo * {
     // Locate the table metadata for the specified table OID
     auto table_meta = tables_.find(table_oid);
     if (table_meta == tables_.end()) {

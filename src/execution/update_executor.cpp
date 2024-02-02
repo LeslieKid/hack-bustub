@@ -74,7 +74,7 @@ auto UpdateExecutor::Next([[maybe_unused]] Tuple *tuple, RID *rid) -> bool {
     /** Update the affected indexes. */
     for (auto &affected_index : index_array_) {
       affected_index->index_->InsertEntry(inserted_tuple.KeyFromTuple(table_info_->schema_, affected_index->key_schema_,
-                                                                   affected_index->index_->GetKeyAttrs()),
+                                                                      affected_index->index_->GetKeyAttrs()),
                                           new_rid.value(), exec_ctx_->GetTransaction());
     }
 
