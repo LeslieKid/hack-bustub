@@ -36,6 +36,7 @@ auto UpdateExecutor::Next([[maybe_unused]] Tuple *tuple, RID *rid) -> bool {
   if (is_end_) {
     return false;
   }
+  printf("run update\n");
   int32_t row_amount = 0;
   Tuple child_tuple{};
   while (child_executor_->Next(&child_tuple, rid)) {
@@ -49,8 +50,10 @@ auto UpdateExecutor::Next([[maybe_unused]] Tuple *tuple, RID *rid) -> bool {
     /** Update the affected index */
     for (auto &index_info : index_array_) {
       auto &index = index_info->index_;
-      index->DeleteEntry(tuple->KeyFromTuple(table_info_->schema_, index_info->key_schema_, index->GetKeyAttrs()), *rid,
+      printf("delete index %s\n", index_info->name_.c_str());
+      index->DeleteEntry(child_tuple.KeyFromTuple(table_info_->schema_, index_info->key_schema_, index->GetKeyAttrs()), *rid,
                          exec_ctx_->GetTransaction());
+      printf("delete index %s done\n", index_info->name_.c_str());
     }
 
     /** Construct to be inserted tuple */
