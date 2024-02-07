@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <cstddef>
+#include <cstdio>
 #include <memory>
 #include <unordered_map>
 #include <utility>
@@ -24,6 +26,9 @@
 #include "execution/expressions/abstract_expression.h"
 #include "execution/plans/aggregation_plan.h"
 #include "storage/table/tuple.h"
+#include "type/type.h"
+#include "type/type_id.h"
+#include "type/value.h"
 #include "type/value_factory.h"
 
 namespace bustub {
@@ -71,14 +76,86 @@ class SimpleAggregationHashTable {
    * @param input The input value
    */
   void CombineAggregateValues(AggregateValue *result, const AggregateValue &input) {
+    bool is_result_empty = result->aggregates_.empty();
+    bool is_input_empty = input.aggregates_.empty();
     for (uint32_t i = 0; i < agg_exprs_.size(); i++) {
+      auto &curr_value = result->aggregates_[i];
       switch (agg_types_[i]) {
         case AggregationType::CountStarAggregate:
-        case AggregationType::CountAggregate:
-        case AggregationType::SumAggregate:
-        case AggregationType::MinAggregate:
-        case AggregationType::MaxAggregate:
+          if (curr_value.CheckInteger()) {
+            int32_t val = 1;
+            Value input_size = ValueFactory::GetIntegerValue(val);
+            curr_value = curr_value.Add(input_size);
+          }
           break;
+
+        case AggregationType::CountAggregate:
+          if (is_input_empty && is_result_empty) {
+            break;
+          }
+          if (curr_value.CheckInteger()) {
+            Value value_one = Value(INTEGER, 1);
+            auto &input_value = input.aggregates_[i];
+            if (!input_value.IsNull()) {
+              if (curr_value.IsNull()) {
+                curr_value = value_one;
+              } else {
+                curr_value = curr_value.Add(value_one);
+              }
+            }
+          }
+          break;
+
+        case AggregationType::SumAggregate: {
+          if (is_input_empty && is_result_empty) {
+            curr_value = ValueFactory::GetNullValueByType(INTEGER);
+            break;
+          }
+          auto &input_value = input.aggregates_[i];
+          if (!input_value.IsNull()) {
+            if (curr_value.IsNull()) {
+              curr_value = input_value;
+            } else {
+              curr_value = curr_value.Add(input_value);
+            }
+          }
+          break;
+        }
+
+        case AggregationType::MinAggregate: {
+          if (is_input_empty && is_result_empty) {
+            curr_value = ValueFactory::GetNullValueByType(INTEGER);
+            break;
+          }
+          auto &input_value = input.aggregates_[i];
+          if (!input_value.IsNull()) {
+            if (curr_value.IsNull()) {
+              curr_value = input_value;
+            } else {
+              curr_value = curr_value.Min(input_value);
+            }
+          }
+          break;
+        }
+
+        case AggregationType::MaxAggregate: {
+          if (is_input_empty && is_result_empty) {
+            curr_value = ValueFactory::GetNullValueByType(INTEGER);
+            break;
+          }
+          auto &input_value = input.aggregates_[i];
+          if (!input_value.IsNull()) {
+            if (curr_value.IsNull()) {
+              curr_value = input_value;
+            } else {
+              curr_value = curr_value.Max(input_value);
+            }
+          }
+          break;
+        }
+
+        default:
+          printf("Invalid AggregationType.\n");
       }
     }
   }
@@ -203,9 +280,11 @@ class AggregationExecutor : public AbstractExecutor {
   std::unique_ptr<AbstractExecutor> child_executor_;
 
   /** Simple aggregation hash table */
-  // TODO(Student): Uncomment SimpleAggregationHashTable aht_;
+  SimpleAggregationHashTable aht_;
 
   /** Simple aggregation hash table iterator */
-  // TODO(Student): Uncomment SimpleAggregationHashTable::Iterator aht_iterator_;
+  SimpleAggregationHashTable::Iterator aht_iterator_;
+
+  bool special_case_end_;
 };
 }  // namespace bustub

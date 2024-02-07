@@ -11,6 +11,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "execution/executors/seq_scan_executor.h"
+#include <cstdio>
 #include <memory>
 #include <vector>
 #include "catalog/catalog.h"

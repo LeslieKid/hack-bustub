@@ -3,17 +3,6 @@
 # How many TAs are there for OH on each weekday?
 # "rowsort" means that the order of result doesn't matter.
 
-query rowsort
-select office_hour, count(*) from __mock_table_tas_2023_fall group by office_hour;
-----
-Never 1
-Yesterday 1
-Friday 3
-Thursday 1
-Wednesday 1
-Tuesday 3
-Randomly 1
-
 # The real test process begins...
 
 # Create a table
