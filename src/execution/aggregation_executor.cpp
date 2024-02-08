@@ -38,32 +38,33 @@ void AggregationExecutor::Init() {
   // Aggregation is pipeline breaker.
   while (child_executor_->Next(&tuple, &rid)) {
     auto key_set = MakeAggregateKey(&tuple);
-    auto value_set = MakeAggregateValue(&tuple); 
+    auto value_set = MakeAggregateValue(&tuple);
     aht_.InsertCombine(key_set, value_set);
   }
   aht_iterator_ = aht_.Begin();
 }
 
 auto AggregationExecutor::Next(Tuple *tuple, RID *rid) -> bool {
-  while(aht_iterator_ != aht_.End()) {
+  while (aht_iterator_ != aht_.End()) {
     auto &agg_val = aht_iterator_.Val();
     auto &agg_key = aht_iterator_.Key();
     std::vector<Value> output_vals;
     output_vals.reserve(agg_val.aggregates_.size() + agg_key.group_bys_.size());
-    for(auto& val : agg_key.group_bys_) {
+    for (auto &val : agg_key.group_bys_) {
       output_vals.emplace_back(val);
     }
-    for(auto& val : agg_val.aggregates_) {
+    for (auto &val : agg_val.aggregates_) {
       output_vals.emplace_back(val);
     }
     ++aht_iterator_;
     *tuple = Tuple(output_vals, &GetOutputSchema());
+    std::cout << output_vals[0].GetAs<int>() << "\n";
     *rid = tuple->GetRid();
     return true;
-  } 
+  }
 
-  if(aht_.Begin() == aht_.End() && !special_case_end_) {
-    if(!plan_->GetGroupBys().empty()) {
+  if (aht_.Begin() == aht_.End() && !special_case_end_) {
+    if (!plan_->GetGroupBys().empty()) {
       return false;
     }
     auto agg_val = aht_.GenerateInitialAggregateValue();

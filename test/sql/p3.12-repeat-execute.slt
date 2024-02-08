@@ -47,6 +47,9 @@ select * from __mock_table_123, (select distinct v2 from t1);
 statement ok
 create index t1v1 on t1(v1);
 
+statement ok
+explain select * from __mock_table_123, (select * from t1 where v1 = 1);
+
 query rowsort +ensure:nlj_init_check
 select * from __mock_table_123, (select * from t1 where v1 = 1);
 ----

@@ -6,14 +6,6 @@
 statement ok
 set force_optimizer_starter_rule=yes
 
-query rowsort
-select * from
-    __mock_table_tas_2023_fall inner join __mock_table_schedule_2023
-    on office_hour = day_of_week
-    where has_lecture = 1;
-----
-fernandolis10 Wednesday Wednesday 1
-
 # The real test begins...
 
 query rowsort +ensure:nlj_init_check

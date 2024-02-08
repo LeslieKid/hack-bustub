@@ -83,9 +83,9 @@ class SimpleAggregationHashTable {
       switch (agg_types_[i]) {
         case AggregationType::CountStarAggregate:
           if (curr_value.CheckInteger()) {
-            int32_t val = 1;
-            Value input_size = ValueFactory::GetIntegerValue(val);
+            Value input_size = ValueFactory::GetIntegerValue(1);
             curr_value = curr_value.Add(input_size);
+            std::cout << curr_value.GetAs<int>() << "\n";
           }
           break;
 

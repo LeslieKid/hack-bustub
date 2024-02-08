@@ -14,7 +14,9 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
+#include "common/rid.h"
 #include "execution/executor_context.h"
 #include "execution/executors/abstract_executor.h"
 #include "execution/plans/nested_loop_join_plan.h"
@@ -55,6 +57,21 @@ class NestedLoopJoinExecutor : public AbstractExecutor {
  private:
   /** The NestedLoopJoin plan node to be executed. */
   const NestedLoopJoinPlanNode *plan_;
+
+  /** The two children of the NLJ. */
+  std::unique_ptr<AbstractExecutor> left_executor_;
+  std::unique_ptr<AbstractExecutor> right_executor_;
+
+  /** Helper for better pipeline. */
+  bool is_inner_loop_end_;
+  bool is_match_;
+
+  /** The outer tuple and Rid in the current outer loop. */
+  Tuple outer_tuple_;
+  RID outer_rid_;
+
+  std::vector<std::pair<Tuple, RID>> inner_table_;
+  uint64_t index_num_;
 };
 
 }  // namespace bustub
